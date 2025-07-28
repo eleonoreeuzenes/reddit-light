@@ -7,18 +7,17 @@ import { Observable } from 'rxjs';
 })
 export class RedditService {
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   // Get top 10 posts from 'formulaone' subreddit for the last day
-  getTopPosts(): Observable<any> {
-    const url = 'https://www.reddit.com/r/formula1/top.json?t=day&limit=10';
+  getTopPosts(subreddit: string): Observable<any> {
+    const url = `https://www.reddit.com/r/${subreddit}/top.json?t=day&limit=10`;
     return this.http.get(url);
   }
 
   // Get top 5 comments for a given post by ID
-  getComments(postId: string): Observable<any> {
-    // Reddit API: comments endpoint, limit to 5
-    const url = `https://www.reddit.com/r/formula1/comments/${postId}.json?limit=5`;
+  getComments(subreddit: string, postId: string): Observable<any> {
+    const url = `https://www.reddit.com/r/${subreddit}/comments/${postId}.json?limit=5`;
     return this.http.get(url);
   }
 }
