@@ -1,20 +1,53 @@
-<h1 class="text-2xl font-bold mb-4">Top posts from r/formula1</h1>
-{{posts.length}} posts found.
-<li *ngFor="let post of posts" class="mb-4 border-b pb-4 list-none">
-  <div class="flex items-start flex-col">
-    <div class="flex-shrink-0">
-      <img
-        *ngIf="getImageUrl(post)"
-        [src]="getImageUrl(post)"
-        alt="preview"
-        class="w-full mr-4 rounded object-cover"
-      />
-    </div>
-    <div>
-      <p class="font-semibold">{{ post.data.title }}</p>
-      <p class="text-sm text-gray-500">{{ post.data.ups }} upvotes</p>
-    </div>
+<h1 class="text-xl font-bold mb-4 text-center">Top posts from r/formula1</h1>
+
+<!-- Loading indicator -->
+<div *ngIf="loading" class="text-center my-4 animate-pulse">
+  Loading posts...
+</div>
+
+<!-- If no post selected: show list -->
+<div *ngIf="!selectedPost && !loading">
+  <ul class="flex flex-col gap-4">
+    <li *ngFor="let post of posts"
+        (click)="onSelectPost(post)"
+        class="cursor-pointer rounded border border-gray-200 shadow-sm p-3 transition-transform duration-150 hover:scale-[1.02] active:scale-[0.98]">
+
+      <div class="flex flex-col">
+        <img
+          *ngIf="getImageUrl(post)"
+          [src]="getImageUrl(post)"
+          alt="preview"
+          class="w-full mb-2 rounded object-cover max-h-48"
+        />
+        <p class="font-semibold text-sm">{{ post.data.title }}</p>
+        <p class="text-xs text-gray-500">{{ post.data.ups }} upvotes</p>
+      </div>
+    </li>
+  </ul>
+</div>
+
+<!-- If post selected: show details -->
+<div *ngIf="selectedPost && !loadingComments" class="p-3">
+  <button (click)="backToList()"
+          class="mb-4 text-sm text-blue-500 hover:underline transition-colors">
+    ← Back to list
+  </button>
+
+  <div class="rounded border border-gray-200 shadow-sm p-3">
+    <h2 class="text-base font-bold mb-2">{{ selectedPost.data.title }}</h2>
+    <p class="text-sm text-gray-700 mb-4">{{ selectedPost.data.selftext }}</p>
+
+    <h3 class="font-semibold mb-2 text-sm">Top 5 comments</h3>
+    <ul class="flex flex-col gap-2">
+      <li *ngFor="let comment of comments"
+          class="text-sm rounded border border-gray-200 shadow-sm p-2">
+        {{ comment.data.body }}
+      </li>
+    </ul>
   </div>
-</li>
+</div>
 
-
+<!-- Loading comments indicator -->
+<div *ngIf="loadingComments && selectedPost" class="text-center my-4 animate-pulse">
+  Loading comments...
+</div>

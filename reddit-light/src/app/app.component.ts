@@ -10,28 +10,46 @@ import { NgFor, CommonModule } from '@angular/common';
 })
 export class AppComponent implements OnInit {
   posts: any[] = [];
+  selectedPost: any = null;
+  comments: any[] = [];
+  loading: boolean = true;           // loading posts
+  loadingComments: boolean = false;  // loading comments
 
   constructor(private redditService: RedditService) {}
 
   ngOnInit(): void {
+    this.fetchPosts();
+  }
+
+  fetchPosts(): void {
+    this.loading = true;
     this.redditService.getTopPosts().subscribe(response => {
       this.posts = response.data.children;
+      this.loading = false;
     });
   }
 
   getImageUrl(post: any): string | null {
-  // If the post has a preview image
-  if (post.data.preview && post.data.preview.images && post.data.preview.images.length) {
-    let url = post.data.preview.images[0].source.url;
-    return url.replace(/&amp;/g, '&');
+    if (post.data.preview?.images?.length) {
+      return post.data.preview.images[0].source.url.replace(/&amp;/g, '&');
+    }
+    if (post.data.thumbnail?.startsWith('http')) {
+      return post.data.thumbnail;
+    }
+    return null;
   }
 
-  // Fallback: if thumbnail exists and starts with http
-  if (post.data.thumbnail && post.data.thumbnail.startsWith('http')) {
-    return post.data.thumbnail;
+  onSelectPost(post: any): void {
+    this.selectedPost = post;
+    this.loadingComments = true;
+    this.redditService.getComments(post.data.id).subscribe(response => {
+      this.comments = response[1].data.children.slice(0, 5);
+      this.loadingComments = false;
+    });
   }
 
-  // No valid image
-  return null;
-}
+  backToList(): void {
+    this.selectedPost = null;
+    this.comments = [];
+  }
 }

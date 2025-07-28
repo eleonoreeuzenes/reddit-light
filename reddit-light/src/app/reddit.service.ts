@@ -14,4 +14,11 @@ export class RedditService {
     const url = 'https://www.reddit.com/r/formula1/top.json?t=day&limit=10';
     return this.http.get(url);
   }
+
+  // Get top 5 comments for a given post by ID
+  getComments(postId: string): Observable<any> {
+    // Reddit API: comments endpoint, limit to 5
+    const url = `https://www.reddit.com/r/formula1/comments/${postId}.json?limit=5`;
+    return this.http.get(url);
+  }
 }
